@@ -177,8 +177,6 @@ void setup() {
   Serial.println();
   Serial.println();
   Serial.println();
-  
-  
   delay(3000);
   
   pinMode(LED, OUTPUT);
