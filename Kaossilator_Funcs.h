@@ -154,9 +154,13 @@ void KaossProcessNoteOn(byte channel, byte note, byte velocity) {
           case KAOSS_CMD_GATE_ARP_SPEED_DEC:
             KaossGateArpSetSpeed(false);
             break;
-          case KAOSS_CMD_SET_MIDI_CHANNEL:
-            if ( ++kaossMidiInTemp > 16 ) kaossMidiInTemp = 1;
-            break;
+          // Beyond 15, we cancel.
+          case KAOSS_CMD_SET_MIDI_CHANNEL_IN: 
+               kaossMidiInTemp++;
+               break;
+          case KAOSS_CMD_SET_MIDI_CHANNEL_OUT:
+               kaossMidiOutTemp++;
+               break;
       }
   }
 
@@ -182,9 +186,14 @@ void KaossProcessNoteOff(byte channel, byte note, byte velocity) {
   // NB : Take care that commands stay below notes to avoid noteon counter confusion
   if (note == KAOSS_CMD_MODE_KEY) {
       kaossCommandModeKeyPressed=false;
-      if ( kaossMidiInTemp > 0 ) {
-          kaossMidiIn = kaossMidiInTemp ; // Channel change is applied only when Command Key is released
+      // Beyond 15 we consider that is equivalent to a cancelation
+      if ( kaossMidiInTemp >= 1 ) {
+          if ( kaossMidiInTemp <= 15 )kaossMidiIn = kaossMidiInTemp ; // Channel change is applied only when Command Key is released
           kaossMidiInTemp = 0;
+      }
+      if ( kaossMidiOutTemp >= 1 ) {
+          if ( kaossMidiOutTemp <= 15 )kaossMidiOut = kaossMidiOutTemp ; // Channel change is applied only when Command Key is released
+          kaossMidiOutTemp = 0;
       }
   }
   else {

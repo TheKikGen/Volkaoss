@@ -56,21 +56,23 @@ void VSampleProcessNoteOn(byte channel, byte note, byte velocity) {
             // Midi IN  channel ON / OFF
             else if ( note == VSAMPLE_CMD_TOGGLE_CC_MIDI_IN && vSampleLastNoteOnChannel >0 )  VSampleToggleCCMidiIn(vSampleLastNoteOnChannel);
             // Play note in GM Mode
-            else if ( note >= VSAMPLE_ROOT_GM_KEY && note < (VSAMPLE_ROOT_GM_KEY + 10)  ) {
-                    thisVar = constrain( note - VSAMPLE_ROOT_GM_KEY +1,0,127);
-                    MIDI.sendControlChange(CC_CHANNEL_VOLUME, velocity, thisVar);  // Velocity simulation
-                    MIDI.sendNoteOn(VSAMPLE_ROOT_GM_KEY,127, thisVar);
-                    vSampleLastNoteOnChannel = thisVar ;
-            }
-            // Play note chromatically in GM mode  FROM ROOT CHROMATIQUE KEY on the channel 10
-            else if ( note >= VSAMPLE_ROOT_CHROMATIC_KEY && note <= 127 && vSampleLastNoteOnChannel ) {
-                MIDI.sendControlChange(CC_CHANNEL_VOLUME, velocity, vSampleLastNoteOnChannel);  // Velocity simulation
-                MIDI.sendControlChange(VSAMPLE_CC_SPEED, VSAMPLE_NOTE_TO_CC_SPEED[note], vSampleLastNoteOnChannel );
-                MIDI.sendNoteOn(VSAMPLE_ROOT_CHROMATIC_KEY,127, vSampleLastNoteOnChannel);
-            }
+    }
+    
+    // Dispatch notes to Volcal Sample channels
+    if ( note >= VSAMPLE_ROOT_GM_KEY && note < (VSAMPLE_ROOT_GM_KEY + 10)  ) {
+          thisVar = constrain( note - VSAMPLE_ROOT_GM_KEY +1,0,127);
+          MIDI.sendControlChange(CC_CHANNEL_VOLUME, velocity, thisVar);  // Velocity simulation
+          MIDI.sendNoteOn(VSAMPLE_ROOT_GM_KEY,127, thisVar);
+          vSampleLastNoteOnChannel = thisVar ;
+    }
+    // Play note chromatically in GM mode FROM ROOT CHROMATIQUE KEY on the channel 10
+    else if ( note >= VSAMPLE_ROOT_CHROMATIC_KEY && note <= 127 && vSampleLastNoteOnChannel ) {
+          MIDI.sendControlChange(CC_CHANNEL_VOLUME, velocity, vSampleLastNoteOnChannel);  // Velocity simulation
+          MIDI.sendControlChange(VSAMPLE_CC_SPEED, VSAMPLE_NOTE_TO_CC_SPEED[note], vSampleLastNoteOnChannel );
+          MIDI.sendNoteOn(VSAMPLE_ROOT_CHROMATIC_KEY,127, vSampleLastNoteOnChannel);
     }
   }
-  // Play notes chromatically on an activated channel (for MIDI recording purpose)
+  // Play notes chromatically on an activated channel (for MIDI recording purpose) other than 10
   else if ( bitRead(vSampleccMidiInState,channel) ) {
         // Other channel than 10, in the (FROM, TO) range play on the full range of the keyboard only if they are active
         MIDI.sendControlChange(CC_CHANNEL_VOLUME, velocity, channel);  // Velocity simulation

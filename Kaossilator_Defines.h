@@ -9,7 +9,7 @@
 // ====================================================================
 // KAOSSILATOR PRO  DEFINES
 // ====================================================================
-#define KAOSS_MIDI_IN             1  // Default MIDI in channel to capture events to Kaosspad
+#define KAOSS_MIDI_IN             1   // Default MIDI in channel to capture events to Kaosspad
 #define KAOSS_MIDI_OUT            11  // Remember that when  using Volcasample, channel 1-10 are used
 #define KAOSS_NOTE_TRANSPOSE      36
 #define KAOSS_YPAD_VALUE          64
@@ -32,16 +32,18 @@
 
 #define KAOSS_CMD_MODE_KEY            12 // Command mode root Key - C0
 
-#define KAOSS_CMD_BANK_A              KAOSS_CMD_MODE_KEY +2
-#define KAOSS_CMD_BANK_B              KAOSS_CMD_MODE_KEY +4
-#define KAOSS_CMD_BANK_C              KAOSS_CMD_MODE_KEY +5
-#define KAOSS_CMD_BANK_D              KAOSS_CMD_MODE_KEY + 7
-#define KAOSS_CMD_ALLBANKS_OFF        KAOSS_CMD_MODE_KEY + 1
-#define KAOSS_CMD_ALLBANKS_ON         KAOSS_CMD_MODE_KEY + 3
-#define KAOSS_CMD_GATE_ARP_SPEED_DEC  KAOSS_CMD_MODE_KEY + 8
-#define KAOSS_CMD_GATE_ARP            KAOSS_CMD_MODE_KEY + 9
-#define KAOSS_CMD_GATE_ARP_SPEED_INC  KAOSS_CMD_MODE_KEY +10
-#define KAOSS_CMD_SET_MIDI_CHANNEL    KAOSS_CMD_MODE_KEY +11
+#define KAOSS_CMD_ALLBANKS_OFF          KAOSS_CMD_MODE_KEY + 1
+#define KAOSS_CMD_BANK_A                KAOSS_CMD_MODE_KEY + 2
+#define KAOSS_CMD_ALLBANKS_ON           KAOSS_CMD_MODE_KEY + 3
+#define KAOSS_CMD_BANK_B                KAOSS_CMD_MODE_KEY + 4
+#define KAOSS_CMD_BANK_C                KAOSS_CMD_MODE_KEY + 5
+#define KAOSS_CMD_SET_MIDI_CHANNEL_OUT  KAOSS_CMD_MODE_KEY + 6
+#define KAOSS_CMD_BANK_D                KAOSS_CMD_MODE_KEY + 7
+#define KAOSS_CMD_GATE_ARP_SPEED_DEC    KAOSS_CMD_MODE_KEY + 8
+#define KAOSS_CMD_GATE_ARP              KAOSS_CMD_MODE_KEY + 9
+#define KAOSS_CMD_GATE_ARP_SPEED_INC    KAOSS_CMD_MODE_KEY +10
+#define KAOSS_CMD_SET_MIDI_CHANNEL_IN   KAOSS_CMD_MODE_KEY +11
+
 
 // Bank on/off status Bit mask
 #define KAOSS_BANK_STATE_A        0
@@ -55,6 +57,7 @@
 byte kaossMidiIn=KAOSS_MIDI_IN;
 byte kaossMidiOut=KAOSS_MIDI_OUT;
 byte kaossMidiInTemp=0;
+byte kaossMidiOutTemp=0;
 bool kaossClockTriggerBankA=false;
 bool kaossClockTriggerBankB=false;
 bool kaossClockTriggerBankC=false;

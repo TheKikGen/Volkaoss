@@ -51,6 +51,8 @@ bool          playingStatus = false;
 int           noteOnCounter = 0;            // Global NoteOn Counter
 unsigned long lastMidiMessageTimestamp =0;  // To handle the LED ON / Off
 
+void(* ArduinoSoftReset) (void) = 0; //declare reset function @ address 0
+
 // =================================================================================
 // DEVICE SPECIFIC DEFINES & FUNCS
 // =================================================================================
@@ -173,7 +175,7 @@ void MIDIAllNotesOff() {
   Serial.write(0x00);
 }
 
-void(* ArduinoSoftreset) (void) = 0; //declare reset function @ address 0
+
 
 // =================================================================================
 // MAIN START HERE
@@ -185,18 +187,18 @@ void setup() {
   // Show the build number
   Serial.begin(115200);
   Serial.println();
-  Serial.println("==========================================");
+  Serial.println("============================================================================");
   Serial.println("VOLKAOSS - MULTI-DEVICES MIDI CONTROLLER");
   Serial.print  ("Build number : ");
   Serial.println(TimestampedVersion);
-  Serial.println("==========================================");
+  Serial.println("============================================================================");
 
   // VK Globals initialisation - EEPROM considerations
   // Read VK globals from EEPROM
   // If the signature is not found, store a new initialized structure, else take the existing
   EEPROM.get(eeAddress, VKeeGlobals);
   if (strcmp(VKeeGlobals.sign,VKINTERNAL_SIGNATURE) || strcmp(VKeeGlobals.ver,VKINTERNAL_VERSION) !=0) {
-      VKInit();
+      VKFactoryInit();
       Serial.println("EEPROM initialized with default parameters");
   } else {
       VKGlobals = VKeeGlobals;      

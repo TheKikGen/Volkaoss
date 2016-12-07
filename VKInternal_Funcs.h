@@ -30,7 +30,7 @@ void VKStoreGlobals() {
     EEPROM.put(eeAddress, VKGlobals);
 }
 
-void VKInit() {
+void VKFactoryInit(bool softReset=false) {
     for (int i = 0 ; i < EEPROM.length() ; i++) EEPROM.write(i, 0);
     strcpy( VKGlobals.sign,VKINTERNAL_SIGNATURE);
     strcpy( VKGlobals.ver, VKINTERNAL_VERSION);
@@ -41,10 +41,11 @@ void VKInit() {
     VKGlobals.kaossYPad             = KAOSS_YPAD_VALUE;
     VKGlobals.vSampleccMidiInState  = 0;
     EEPROM.put(eeAddress, VKGlobals);
+    if (softReset) ArduinoSoftReset();
 }
 
 void VKShowParams() {
-  Serial.println("==========================================");
+  Serial.println("============================================================================");
   Serial.print("Version                             : ");
   Serial.println(VKGlobals.ver);
   Serial.print("VK Midin                            : ");
@@ -59,14 +60,14 @@ void VKShowParams() {
   Serial.println(VKGlobals.kaossYPad);
   Serial.print("Volca Sample midi in channel status : ");
   Serial.println(VKGlobals.vSampleccMidiInState,BIN);  
-  Serial.println("==========================================");
+  Serial.println("============================================================================");
 }
 
 void VKProcessNoteOn(byte channel, byte note, byte velocity) {
     if (note == VKINTERNAL_CMD_MODE_KEY) vkCommandModeKeyPressed=true;
     else if ( vkCommandModeKeyPressed ) {
             // Initialize parameters in EEPROM (reset to default)
-            if (note == VKINTERNAL_CMD_INIT) VKInit();
+            if (note == VKINTERNAL_CMD_FACTORY_INIT) VKFactoryInit(true);
             // Store parameters into EEPROM
             else if (note == VKINTERNAL_CMD_SAVE) VKStoreGlobals();
     }
