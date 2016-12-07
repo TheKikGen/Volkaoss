@@ -1,16 +1,22 @@
-// VOLKASSILATOR PROJECT
-//
-// Remap and control events for a better use of the Korg Kaossilator pro and the Volca Sample.
-//
-// - Allow to play MIDI notes with the Kaossilator pro synth
-// - Allow to map Volcal Sample parts 1-10 to a GM standard rythm channel 10
-// Franck Touanen - Nov 2016.
+/**********************************************************************************
+  
+  VOLKASSILATOR PROJECT
+  Remap and control events for a better use of the Korg Kaossilator pro and the Volca Sample.
+  - Allow to play MIDI notes with the Kaossilator pro synth 
+  - Allow to map Volcal Sample parts 1-10 to a GM standard rythm channel 10
+  Franck Touanen - Nov 2016.
 
+************************************************************************************/
+
+#include <string.h>
 #include "build_number_defines.h"
 #include <MIDI.h>
+#include <EEPROM.h>
 
-// Custom MDI setting
-
+// =================================================================================
+// MIDI CC AND OTHERS GLOBALS DEFINES AND SETTINGS 
+// =================================================================================
+// Custom MIDI setting
 struct customMIDISettings : public midi::DefaultSettings {
     static const bool     UseRunningStatus = true;
     static const bool     HandleNullVelocityNoteOnAsNoteOff = true; // get NoteOff events when receiving null-velocity NoteOn messages.
@@ -20,13 +26,6 @@ struct customMIDISettings : public midi::DefaultSettings {
 };
 MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial, MIDI, customMIDISettings);
 
-// GENERIC DEFINES =============================================================================
-
-#define LED 13
-#define ON  1
-#define OFF 0
-
-// MIDI CC AND OTHERS GLOBALS DEFINES ==========================================================
 #define CC_MODULATION_WHEEL 1
 #define CC_CHANNEL_VOLUME   7
 #define CC_PAN              10
@@ -41,44 +40,51 @@ MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial, MIDI, customMIDISettings);
 #define CC_LFO_DELAY        78
 #define CC_SUSTAIN          79
 
-// VOLKAOSS INTERNAL DEFINES ===================================================================
-#define VKINTERNAL_VERSION 1.0
-#define VKINTERNAL_MIDI_IN 16
-
-// GLOBALS =====================================================================================
+// =================================================================================
+// GENERIC DEFINES & GLOBALS
+// =================================================================================
+#define LED 13
+#define ON  1
+#define OFF 0
 byte          clockCounter = 0;
 bool          playingStatus = false;
 int           noteOnCounter = 0;            // Global NoteOn Counter
 unsigned long lastMidiMessageTimestamp =0;  // To handle the LED ON / Off
 
-// DEVICE SPECIFIC DEFINES ==================================================================
-#include "Volca_Sample_Defines.h"
+// =================================================================================
+// DEVICE SPECIFIC DEFINES & FUNCS
+// =================================================================================
+#include "VKInternal_Defines.h"
 #include "Kaossilator_Defines.h"
+#include "Volca_Sample_Defines.h"
+#include "VKInternal_Funcs.h"
+#include "Kaossilator_Funcs.h"
+#include "Volca_Sample_Funcs.h"
 
-// FUNCS =======================================================================================
+// =================================================================================
+// MIDI FUNCS : REAL TIME MIDI EVENTS
+// =================================================================================
 
-// REAL TIME EVENTS ----------------------------------------------------------------------------
 void OnMidiClock() {
-  clockCounter++;
-  if (clockCounter == 1) {
-      digitalWrite(LED, HIGH); // set the LED on
+  if (++clockCounter == 1) {
+//      digitalWrite(LED, HIGH); // set the LED on
       clockTrigEvents();
   }
   // do something every 16th note
 
-  else if (clockCounter == 6 ) digitalWrite(LED, LOW); // set the LED off
+//  else if (clockCounter == 6 ) //digitalWrite(LED, LOW); // set the LED off
 
 // do something every 8th note
 //  else if (clockCounter == 12 ) {  }  ;
 
-  // do something every quarter note
+// do something every quarter note
   else if (clockCounter >= 24 ) clockCounter = 0 ;
 }
 
 void clockTrigEvents() {
 
   KaossTrigEvents();
-  
+
 }
 
 void OnStart() {
@@ -95,12 +101,14 @@ void OnStop() {
   KaossProcessStop();
 }
 
-
-// Midi Handlers -------------------------------------------------------------------------------
-
+// =================================================================================
+// MIDI HANDLERS
+// =================================================================================
 void OnNoteOff(byte channel, byte note, byte velocity) {
   noteOnCounter --;
   if (channel == kaossMidiIn) KaossProcessNoteOff(channel, note, velocity);
+  else if (channel == VSAMPLE_MIDI_IN or bitRead(vSampleccMidiInState,channel) ) VSampleProcessNoteOff(channel, note, velocity);
+  else if (channel == VKINTERNAL_MIDI_IN ) VKProcessNoteOff(channel, note, velocity);
   //if ( noteOnCounter<1 ) digitalWrite(LED, LOW);
 }
 
@@ -112,6 +120,7 @@ void OnNoteOn(byte channel, byte note, byte velocity) {
 
   if (channel == kaossMidiIn) KaossProcessNoteOn(channel, note, velocity);
   else if (channel == VSAMPLE_MIDI_IN or bitRead(vSampleccMidiInState,channel) ) VSampleProcessNoteOn(channel, note, velocity);
+  else if (channel == VKINTERNAL_MIDI_IN ) VKProcessNoteOn(channel, note, velocity);
 }
 
 void OnProgramChange(byte channel, byte number) {
@@ -129,8 +138,9 @@ void OnPitchBend(byte channel, int pitch) {
   if (channel == kaossMidiIn) KaossProcessPitchBend(channel, pitch);
 }
 
-// Utilities -----------------------------------------------------------------------------------
-
+// =================================================================================
+// MIDI UTILITIES
+// =================================================================================
 void MIDIhardreset() {
 Serial.write(0xFF);
 }
@@ -163,23 +173,40 @@ void MIDIAllNotesOff() {
   Serial.write(0x00);
 }
 
-// Main ----------------------------------------------------------------------------------------
+void(* ArduinoSoftreset) (void) = 0; //declare reset function @ address 0
+
+// =================================================================================
+// MAIN START HERE
+// =================================================================================
+
 void setup() {
-
-
+  pinMode(LED, OUTPUT);
+  
   // Show the build number
   Serial.begin(115200);
-  Serial.println("Volkaoss MIDI controller.  Build number : ");
-  Serial.println(TimestampedVersion);
   Serial.println();
   Serial.println("==========================================");
-  Serial.println();
-  Serial.println();
-  Serial.println();
-  Serial.println();
-  delay(3000);
-  
-  pinMode(LED, OUTPUT);
+  Serial.println("VOLKAOSS - MULTI-DEVICES MIDI CONTROLLER");
+  Serial.print  ("Build number : ");
+  Serial.println(TimestampedVersion);
+  Serial.println("==========================================");
+
+  // VK Globals initialisation - EEPROM considerations
+  // Read VK globals from EEPROM
+  // If the signature is not found, store a new initialized structure, else take the existing
+  EEPROM.get(eeAddress, VKeeGlobals);
+  if (strcmp(VKeeGlobals.sign,VKINTERNAL_SIGNATURE) || strcmp(VKeeGlobals.ver,VKINTERNAL_VERSION) !=0) {
+      VKInit();
+      Serial.println("EEPROM initialized with default parameters");
+  } else {
+      VKGlobals = VKeeGlobals;      
+      Serial.println("Parameters retrieved from EEPROM");
+  }
+
+  VKSetGlobals();
+  VKShowParams();
+
+  delay(1000);
 
   // Initiate MIDI communications, listen to all channels
   MIDI.begin(MIDI_CHANNEL_OMNI);
@@ -215,6 +242,6 @@ void loop() {
   }
   else if ( millis() - lastMidiMessageTimestamp > 1000) {
     digitalWrite(LED, LOW);
-  } 
-   
+  }
+
 }

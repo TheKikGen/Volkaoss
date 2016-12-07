@@ -6,8 +6,9 @@
 // - Allow to map Volcal Sample parts 1-10 to a GM standard rythm channel 10
 // Franck Touanen - Nov 2016.
 
-// VOLCA SAMPLE DEFINES ========================================================================
-
+// =================================================================================
+// VOLCA SAMPLE DEFINES
+// =================================================================================
 #define VSAMPLE_MIDI_IN 10         // Capture MIDI in channel for the Volva Sample device
                                    // Note : MIDI channels out are always 1-10 for the Volca Sample.
 #define VSAMPLE_CC_MIDI_IN_FROM 5  // For detailed CC setting on parts, we reserve channel 5 to 9
@@ -32,18 +33,19 @@
 
 // Commands are at C0
 
-#define VSAMPLE_CMD_TOGGLE_CC_MIDI_IN     12 // Midi IN on/off for the selected part (channel)  
-#define VSAMPLE_CMD_RESET_ALL_CC          14 // Reset all CC value of the current part
+#define VSAMPLE_CMD_MODE_KEY          12 // Command mode root Key - C0. Always on Channel 10.
+
+#define VSAMPLE_CMD_TOGGLE_CC_MIDI_IN     VSAMPLE_CMD_MODE_KEY+2 // Midi IN on/off for the selected part (channel)
+#define VSAMPLE_CMD_RESET_ALL_CC          VSAMPLE_CMD_MODE_KEY+4 // Reset all CC value of the current part
 
 /*16  Gen Purpose Controller 1
 17  Gen Purpose Controller 2
 18  Gen Purpose Controller 3
 19  Gen Purpose Controller 4*/
 
-// GLOBALS =====================================================================================
-
 byte vSampleLastNoteOnChannel = 0 ;
 int  vSampleccMidiInState = 0 ;   // if the (channel) bit is 1 , then MIDI IN is ON
+bool vSampleCommandModeKeyPressed=false;
 
 // PITCH VALUE FOR VOLCA SAMPLE WHEN USING THE SPEED CC
 const byte VSAMPLE_NOTE_TO_CC_SPEED[] = {
@@ -56,107 +58,4 @@ const byte VSAMPLE_NOTE_TO_CC_SPEED[] = {
 96, 97, 99, 100, 102, 103, 104, 106, 107, 108,  // C6
 109, 111, 112
 };
-
-// Volca Sample funcs --------------------------------------------------------------------------
-
-void VSampleBlinkedChannels(byte num) {
-    for (byte i=0;i<num;i++)
-    {
-      for (byte channel=4; channel<= 7 ; channel++ ) {
-          MIDI.sendControlChange(VSAMPLE_CC_LEVEL, 0, channel );
-          MIDI.sendNoteOn(VSAMPLE_ROOT_GM_KEY,127, channel);   }
-      delay(200);    }
-}
-
-void VSampleResetAllCC(byte channel) {
-    if (channel >=1 || channel <=10 ) {
-        MIDI.sendControlChange(VSAMPLE_CC_START_POINT, 0, channel );
-        MIDI.sendControlChange(VSAMPLE_CC_LENGTH, 127, channel );
-        MIDI.sendControlChange(VSAMPLE_CC_HI_CUT, 127, channel );
-        MIDI.sendControlChange(VSAMPLE_CC_SPEED, 64, channel );
-        MIDI.sendControlChange(VSAMPLE_CC_PITCH_EG_INT, 64, channel );
-        MIDI.sendControlChange(VSAMPLE_CC_PITCH_EG_ATTACK, 0, channel );
-        MIDI.sendControlChange(VSAMPLE_CC_PITCH_EG_DECAY, 127, channel );
-        MIDI.sendControlChange(VSAMPLE_CC_LEVEL,100, channel );
-        MIDI.sendControlChange(VSAMPLE_CC_PAN,64, channel );
-        MIDI.sendControlChange(VSAMPLE_CC_AMP_ATTACK, 0, channel );
-        MIDI.sendControlChange(VSAMPLE_CC_AMP_DECAY, 127, channel );
-    }
-}
-
-void VSampleToggleCCMidiIn(byte channel) {
-    // Midi channels are activables only in the specified range in the defines
-    if ( channel >= VSAMPLE_CC_MIDI_IN_FROM && channel <= VSAMPLE_CC_MIDI_IN_TO ) bitWrite(vSampleccMidiInState,channel,!bitRead(vSampleccMidiInState,channel));
-}
-
-void VSampleProcessNoteOn(byte channel, byte note, byte velocity) {
-  static int thisVar;
-
-  // CMD Only on the channel 10
-  if (channel == VSAMPLE_MIDI_IN ) {
-
-    // Reset all CC on the current part
-    if ( note == VSAMPLE_CMD_RESET_ALL_CC && vSampleLastNoteOnChannel >0) VSampleResetAllCC(vSampleLastNoteOnChannel);
-
-    // Midi IN  channel ON / OFF
-    else if ( note == VSAMPLE_CMD_TOGGLE_CC_MIDI_IN && vSampleLastNoteOnChannel >0 )  VSampleToggleCCMidiIn(vSampleLastNoteOnChannel);
-      
-    // Play note in GM Mode
-    else if ( note >= VSAMPLE_ROOT_GM_KEY && note < (VSAMPLE_ROOT_GM_KEY + 10)  ) {
-        thisVar = constrain( note - VSAMPLE_ROOT_GM_KEY +1,0,127);
-        MIDI.sendControlChange(CC_CHANNEL_VOLUME, velocity, thisVar);  // Velocity simulation
-        MIDI.sendNoteOn(VSAMPLE_ROOT_GM_KEY,127, thisVar);
-        vSampleLastNoteOnChannel = thisVar ;
-    } 
-    // Play note chromatically in GM mode  - Channel 10
-    else if ( note >= VSAMPLE_ROOT_CHROMATIC_KEY && note <= 127 && vSampleLastNoteOnChannel ) {
-        MIDI.sendControlChange(CC_CHANNEL_VOLUME, velocity, vSampleLastNoteOnChannel);  // Velocity simulation
-        MIDI.sendControlChange(VSAMPLE_CC_SPEED, VSAMPLE_NOTE_TO_CC_SPEED[note], vSampleLastNoteOnChannel );
-        MIDI.sendNoteOn(VSAMPLE_ROOT_CHROMATIC_KEY,127, vSampleLastNoteOnChannel);
-    }
-  }
-  // Play notes chromatically on an activated channel (for MIDI recording purpose)
-  else if ( bitRead(vSampleccMidiInState,channel) ) {
-        // Other channel than 10, in the (FROM, TO) range play on the full range of the keyboard only if they are active
-        MIDI.sendControlChange(CC_CHANNEL_VOLUME, velocity, channel);  // Velocity simulation
-        MIDI.sendControlChange(VSAMPLE_CC_SPEED, VSAMPLE_NOTE_TO_CC_SPEED[note], channel );
-        MIDI.sendNoteOn(VSAMPLE_ROOT_CHROMATIC_KEY,127, channel);    
-  }
-}
-
-void VSampleProcessControlChange(byte channel, byte control, byte value) {
-    byte xchannel;
-    
-    xchannel = channel;
-    if ( channel == VSAMPLE_MIDI_IN or bitRead(vSampleccMidiInState,channel) ) {      
-        if ( channel == VSAMPLE_MIDI_IN) xchannel = vSampleLastNoteOnChannel; 
-        switch (control) {
-            case CC_CHANNEL_VOLUME:  MIDI.sendControlChange(VSAMPLE_CC_LEVEL,           value, xchannel); break;
-            case CC_PAN:             MIDI.sendControlChange(VSAMPLE_CC_PAN,             value, xchannel); break;
-            case CC_ATTACK_TIME:     MIDI.sendControlChange(VSAMPLE_CC_START_POINT,     value, xchannel); break;
-            case CC_RELEASE_TIME:    MIDI.sendControlChange(VSAMPLE_CC_LENGTH,          value, xchannel); break;
-            case CC_CUTOFF:          MIDI.sendControlChange(VSAMPLE_CC_HI_CUT,          value, xchannel); break;
-            case CC_LFO_RATE:        MIDI.sendControlChange(VSAMPLE_CC_PITCH_EG_INT,    value, xchannel); break;
-            case CC_LFO_AMOUNT:      MIDI.sendControlChange(VSAMPLE_CC_PITCH_EG_ATTACK, value, xchannel); break;
-            case CC_LFO_DELAY:       MIDI.sendControlChange(VSAMPLE_CC_PITCH_EG_DECAY,  value, xchannel); break;
-            case CC_SUSTAIN:         MIDI.sendControlChange(VSAMPLE_CC_AMP_ATTACK,      value, xchannel); break;                                                            
-            case CC_DECAY:           MIDI.sendControlChange(VSAMPLE_CC_AMP_DECAY,       value, xchannel); break;
-            //default:                 MIDI.sendControlChange(control,                    value, xchannel); break;
-        }
-    }
-}
-
-void VSampleInitialize() {
-
-  for (byte channel=1; channel<=10 ; channel++) {
-    MIDI.sendControlChange(VSAMPLE_CC_LEVEL, 0, channel );
-    MIDI.sendNoteOn(VSAMPLE_ROOT_GM_KEY,127, channel);  // Light the channel on the Volcal Sample
-    VSampleResetAllCC(channel);
-    delay(200);
-  }
-
-  VSampleBlinkedChannels(4);
-
-}
-
 
