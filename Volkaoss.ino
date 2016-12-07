@@ -51,6 +51,8 @@ bool          playingStatus = false;
 int           noteOnCounter = 0;            // Global NoteOn Counter
 unsigned long lastMidiMessageTimestamp =0;  // To handle the LED ON / Off
 
+bool          debugMode = false ;          // Activate display -- For debugging purpose
+
 void(* ArduinoSoftReset) (void) = 0; //declare reset function @ address 0
 
 // =================================================================================
@@ -183,31 +185,36 @@ void MIDIAllNotesOff() {
 
 void setup() {
   pinMode(LED, OUTPUT);
-  
-  // Show the build number
-  Serial.begin(115200);
-  Serial.println();
-  Serial.println("============================================================================");
-  Serial.println("VOLKAOSS - MULTI-DEVICES MIDI CONTROLLER");
-  Serial.print  ("Build number : ");
-  Serial.println(TimestampedVersion);
-  Serial.println("============================================================================");
 
+  bool FromEEProm=false;
+  
   // VK Globals initialisation - EEPROM considerations
   // Read VK globals from EEPROM
   // If the signature is not found, store a new initialized structure, else take the existing
   EEPROM.get(eeAddress, VKeeGlobals);
   if (strcmp(VKeeGlobals.sign,VKINTERNAL_SIGNATURE) || strcmp(VKeeGlobals.ver,VKINTERNAL_VERSION) !=0) {
-      VKFactoryInit();
-      Serial.println("EEPROM initialized with default parameters");
+     VKFactoryInit();      
   } else {
       VKGlobals = VKeeGlobals;      
-      Serial.println("Parameters retrieved from EEPROM");
+      FromEEProm = true;
   }
 
   VKSetGlobals();
-  VKShowParams();
-
+  
+  if (debugMode) {
+      // Show the build number
+      Serial.begin(115200);
+      Serial.println();
+      Serial.println("============================================================================");
+      Serial.println("VOLKAOSS - MULTI-DEVICES MIDI CONTROLLER");
+      Serial.print  ("Build number : ");
+      Serial.println(TimestampedVersion);
+      Serial.println("============================================================================");
+      if (FromEEProm) Serial.println("Parameters retrieved from EEPROM") ;
+        else Serial.println("EEPROM initialized with default parameters");
+      VKShowParams();
+  }
+  
   delay(1000);
 
   // Initiate MIDI communications, listen to all channels

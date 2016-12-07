@@ -11,6 +11,7 @@
 // ====================================================================
 
 void VKSetGlobals() {
+    debugMode               = VKGlobals.debugMode ;
     vkMidiIn                = VKGlobals.vkMidiIn ;
     kaossMidiIn             = VKGlobals.kaossMidiIn  ;
     kaossMidiOut            = VKGlobals.kaossMidiOut ;
@@ -21,6 +22,7 @@ void VKSetGlobals() {
 
 
 void VKStoreGlobals() {
+    VKGlobals.debugMode             = debugMode ;
     VKGlobals.vkMidiIn              = vkMidiIn;
     VKGlobals.kaossMidiIn           = kaossMidiIn;
     VKGlobals.kaossMidiOut          = kaossMidiOut;
@@ -34,6 +36,7 @@ void VKFactoryInit(bool softReset=false) {
     for (int i = 0 ; i < EEPROM.length() ; i++) EEPROM.write(i, 0);
     strcpy( VKGlobals.sign,VKINTERNAL_SIGNATURE);
     strcpy( VKGlobals.ver, VKINTERNAL_VERSION);
+    VKGlobals.debugMode             = false;
     VKGlobals.vkMidiIn              = VKINTERNAL_MIDI_IN;
     VKGlobals.kaossMidiIn           = KAOSS_MIDI_IN;
     VKGlobals.kaossMidiOut          = KAOSS_MIDI_OUT;
@@ -47,7 +50,9 @@ void VKFactoryInit(bool softReset=false) {
 void VKShowParams() {
   Serial.println("============================================================================");
   Serial.print("Version                             : ");
-  Serial.println(VKGlobals.ver);
+  Serial.println(VKGlobals.ver);  
+  Serial.print("Debug mode                          : "); 
+  Serial.println(VKGlobals.debugMode);
   Serial.print("VK Midin                            : ");
   Serial.println(VKGlobals.vkMidiIn);
   Serial.print("Kaossilator Midi In                 : ");
@@ -65,11 +70,14 @@ void VKShowParams() {
 
 void VKProcessNoteOn(byte channel, byte note, byte velocity) {
     if (note == VKINTERNAL_CMD_MODE_KEY) vkCommandModeKeyPressed=true;
+    
     else if ( vkCommandModeKeyPressed ) {
-            // Initialize parameters in EEPROM (reset to default)
-            if (note == VKINTERNAL_CMD_FACTORY_INIT) VKFactoryInit(true);
-            // Store parameters into EEPROM
-            else if (note == VKINTERNAL_CMD_SAVE) VKStoreGlobals();
+      switch (note) {
+          case VKINTERNAL_CMD_FACTORY_INIT:   VKFactoryInit(true) ;       break;
+          case VKINTERNAL_CMD_SAVE:           VKStoreGlobals();           break;
+          case VKINTERNAL_CMD_TOGGLE_DEBUG:   debugMode = !debugMode;     break;
+          case VKINTERNAL_CMD_SOFT_RESET:     ArduinoSoftReset();         break;
+      }            
     }
 }
 
