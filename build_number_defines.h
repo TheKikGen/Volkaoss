@@ -111,17 +111,17 @@
 
 #endif
 
-//builds a version that looks like 1.140216.2041
+//builds a version that looks like 1.160214.2041
 const char TimestampedVersion[] =
 {
     VERSION_MAJOR_INIT,
     '.',
-    BUILD_DAY_CH0,
-	BUILD_DAY_CH1,
-    BUILD_MONTH_CH0,
-	BUILD_MONTH_CH1,
-    BUILD_YEAR_CH2,
-	BUILD_YEAR_CH3,
+      BUILD_YEAR_CH2,
+    BUILD_YEAR_CH3,
+      BUILD_MONTH_CH0,
+    BUILD_MONTH_CH1,
+      BUILD_DAY_CH0,
+	  BUILD_DAY_CH1,
     '.',
     BUILD_HOUR_CH0,
 	BUILD_HOUR_CH1,
