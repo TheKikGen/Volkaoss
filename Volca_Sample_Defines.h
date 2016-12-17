@@ -59,3 +59,13 @@ const byte VSAMPLE_NOTE_TO_CC_SPEED[] = {
 109, 111, 112
 };
 
+// Function prototypes
+
+void VSampleBlinkedChannels(byte num);
+void VSampleResetAllCC(byte channel);
+void VSampleToggleCCMidiIn(byte channel);
+void VSampleProcessNoteOff(byte channel, byte note, byte velocity);
+void VSampleProcessNoteOn(byte channel, byte note, byte velocity);
+void VSampleProcessControlChange(byte channel, byte control, byte value) ;
+void VSampleInitialize();
+

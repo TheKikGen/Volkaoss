@@ -15,6 +15,7 @@ void KaossToggleBank(byte ccBank, byte bankState) {
     MIDI.sendNoteOn(ccBank,127, kaossMidiOut);
 }
 
+
 void KaossSetAllBanks(bool banksOn) {
     if ( bitRead(kaossButtonsState,KAOSS_BANK_STATE_A) != banksOn ) MIDI.sendNoteOn(KAOSS_NOTEON_BANK_A,127, kaossMidiOut);
     if ( bitRead(kaossButtonsState,KAOSS_BANK_STATE_B) != banksOn ) MIDI.sendNoteOn(KAOSS_NOTEON_BANK_B,127, kaossMidiOut);
@@ -42,6 +43,7 @@ void KaossGateArpSetSpeed(bool speedIncrease) {
     else if ( kaossGateArpSpeed < 0) kaossGateArpSpeed = 10;
     MIDI.sendControlChange(KAOSS_CC_GATE_ARP_SPEED, kaossGateArpSpeedCCValues[kaossGateArpSpeed], kaossMidiOut);
 }
+
 
 void KaossInitialize() {
     MIDI.sendControlChange(KAOSS_CC_VOLUME, 64,kaossMidiOut);

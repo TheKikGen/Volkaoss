@@ -92,3 +92,16 @@ const byte KAOSS_NOTE_TO_CC[] = {
   ,127
 };
 
+// Functions prototypes
+void KaossProcessProgramChange(byte channel, byte number);
+void KaossProcessNoteOff(byte channel, byte note, byte velocity);
+void KaossProcessNoteOn(byte channel, byte note, byte velocity);
+void KaossTrigEvents();
+void KaossProcessStop();
+void KaossInitialize() ;
+void KaossGateArpSetSpeed(bool speedIncrease);
+void KaossProcessPitchBend(byte channel, int pitch);
+void KaossSetAllBanks(bool banksOn) ;
+void KaossToggleBank(byte ccBank, byte bankState);
+
+

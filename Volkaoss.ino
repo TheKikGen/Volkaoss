@@ -53,7 +53,19 @@ unsigned long lastMidiMessageTimestamp =0;  // To handle the LED ON / Off
 
 bool          debugMode = false ;          // Activate display -- For debugging purpose
 
+// Functions prototypes
 void(* ArduinoSoftReset) (void) = 0; //declare reset function @ address 0
+void OnMidiClock();
+void clockTrigEvents();
+void OnStart();
+void OnContinue();
+void OnSongPosition(unsigned beats);
+void OnStop();
+void OnNoteOff(byte channel, byte note, byte velocity); 
+void OnNoteOn(byte channel, byte note, byte velocity); 
+void OnProgramChange(byte channel, byte number);
+void OnControlChange(byte channel, byte control, byte value);
+void OnPitchBend(byte channel, int pitch);
 
 // =================================================================================
 // DEVICE SPECIFIC DEFINES & FUNCS
@@ -98,6 +110,11 @@ void OnStart() {
 
 void OnContinue() {
   playingStatus = true;
+}
+
+void OnSongPosition(unsigned beats) {
+
+  
 }
 
 void OnStop() {
@@ -159,15 +176,16 @@ Serial.write(0x0A); // action 0x0A= reset
 Serial.write(0xF7);
 }
 
-void BlinkLed(byte num)         // Basic LED blink function
+void BlinkLed(byte num,int millisec=50)         // Basic LED blink function
 {
     for (byte i=0;i<num;i++) {
         digitalWrite(LED,HIGH);
-        delay(50);
+        delay(millisec);
         digitalWrite(LED,LOW);
-        delay(50);
+        delay(millisec);
     }
 }
+
 
 //MIDI All Notes Off (Can be handy during development and as a general power up command to send)
 void MIDIAllNotesOff() {
@@ -176,8 +194,6 @@ void MIDIAllNotesOff() {
   Serial.write(0x7B);
   Serial.write(0x00);
 }
-
-
 
 // =================================================================================
 // MAIN START HERE
@@ -219,8 +235,7 @@ void setup() {
 
   // Initiate MIDI communications, listen to all channels
   MIDI.begin(MIDI_CHANNEL_OMNI);
-  //MIDI.turnThruOff(); // ALWAYS AFTER BEGIN ELSE IT DOESN'T WORK !!
-  MIDI.turnThruOn(3); // Off but system messages
+  MIDI.turnThruOn(midi::Thru::DifferentChannel); // Off but system messages. ALWAYS AFTER BEGIN ELSE IT DOESN'T WORK !!
 /*
     Off                   = 0,  ///< Thru disabled (nothing passes through).
     Full                  = 1,  ///< Fully enabled Thru (every incoming message is sent back).
@@ -233,6 +248,8 @@ void setup() {
   MIDI.setHandleControlChange(OnControlChange);
   MIDI.setHandleProgramChange(OnProgramChange) ;
   MIDI.setHandleClock(OnMidiClock);
+  MIDI.setHandleSongPosition(OnSongPosition);
+  //MIDI.setHandleTimeCodeQuarterFrame(OnTimeCodeQuarterFrame);
   MIDI.setHandleStart(OnStart);
   MIDI.setHandleContinue(OnContinue);
   MIDI.setHandleStop(OnStop);

@@ -38,4 +38,11 @@ int           eeAddress = 0; // EEPROM address offset
 byte vkMidiIn=VKINTERNAL_MIDI_IN;
 bool vkCommandModeKeyPressed=false;
 
+// Functions prototypes
+void VKSetGlobals();
+void VKStoreGlobals();
+void VKFactoryInit(bool softReset=false);
+void VKShowParams();
+void VKProcessNoteOn(byte channel, byte note, byte velocity);
+void VKProcessNoteOff(byte channel, byte note, byte velocity);
 
