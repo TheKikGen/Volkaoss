@@ -1,7 +1,7 @@
 # Volkaoss
 VOLKAOSS -  VOLCASAMPLE AND KAOSSCILATOR AS TRUE DRUM BOX / SYNTH
 
-Since a few months, I use more and more hardware gear and synths, and a little less frequently software like VST plugins, the urge to touch buttons, turn knobs, plug and unplug cables. Thus, my setup is becoming a patchwork of "old" analog synths, sequencing softwares, sampler, and other more or less recent gears ...
+I use more and more hardware gear and synths, and a little less frequently software like VST plugins, the urge to touch buttons, turn knobs, plug and unplug cables. Thus, my setup is becoming a patchwork of "old" analog synths, sequencing softwares, sampler, and other more or less recent gears ...
 
 The common point of all this: MIDI (not always). And in the world of MIDI, it is sometimes complicated to talk to each other.
 
