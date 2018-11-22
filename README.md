@@ -24,18 +24,18 @@ It is a real pleasure to play on the KP3 with a keyboard, at the right pitch, tr
 
 ## VK features for the Kaossilator Pro 3 / Pro 3 +
 
-. Map midi notes to specific pad press and X, Y control changes (1)
-. Manage holded note on when playing another as a mono synth do
-. Pitch bend handling relatively to the note currently pressed on the keyboard
-. Map Cutoff, Reverb level or Modulation Wheel to PAD Y 
-. Map Resonnance to a totally free PAD X
-. Velocity sensitivity
-. Commands on the C0 octave  (C0 beeing the "command" key) :
-. Start/stop bank A, B, C, D.  (2)
-. All banks on / off (2)
-. ARP/GATE start / stop (2)
-. ARP speed increase / decrease (rotate from max to min and min to max)
-. Change Midi In channel
+- Map midi notes to specific pad press and X, Y control changes (1)
+- Manage holded note on when playing another as a mono synth do
+- Pitch bend handling relatively to the note currently pressed on the keyboard
+- Map Cutoff, Reverb level or Modulation Wheel to PAD Y 
+- Map Resonnance to a totally free PAD X
+- Velocity sensitivity
+- Commands on the C0 octave  (C0 beeing the "command" key) :
+- Start/stop bank A, B, C, D.  (2)
+- All banks on / off (2)
+- ARP/GATE start / stop (2)
+- ARP speed increase / decrease (rotate from max to min and min to max)
+- Change Midi In channel
 
 (1) The kaossilator must set to 4 octaves, and scale must be chromatic. The Key is usually better fixed to C minus.
 (2) If a midi clock is received, the banks, and the ARG/GATE are started synchronously with the BPM
@@ -44,6 +44,6 @@ It is a real pleasure to play on the KP3 with a keyboard, at the right pitch, tr
 
 ## VK features for the Volca Sample :
 
-. Map notes to channel 10, C2 octave to Volca Sample parts on midi 1 to 10, and play chromatically the last part played (not used for recording) beyond C2
-. Commands on C0/ Channel 10 to toggle midi IN for parts (5-9) to use them for specific Volca controls or playing chromatically when recording with a DAW 
-. Velocity sensitivity
+- Map notes to channel 10, C2 octave to Volca Sample parts on midi 1 to 10, and play chromatically the last part played (not used for recording) beyond C2
+- Commands on C0/ Channel 10 to toggle midi IN for parts (5-9) to use them for specific Volca controls or playing chromatically when recording with a DAW 
+- Velocity sensitivity
