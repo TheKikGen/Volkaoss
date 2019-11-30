@@ -20,6 +20,10 @@
 #define VKINTERNAL_CMD_TOGGLE_DEBUG     VKINTERNAL_CMD_MODE_KEY+5
 #define VKINTERNAL_CMD_SOFT_RESET       VKINTERNAL_CMD_MODE_KEY+7
 
+#define VKINTERNAL_MODE_ALL      00  // All functions
+#define VKINTERNAL_MODE_KAOSS    01  // Kaossilator only
+#define VKINTERNAL_MODE_VOLCA    02  // Volcasample Only
+
 // Settings structure. Used to store parameters in the EEPROM of the Arduino. 512 bytes max.
 
 struct VKSettingsTemplate {
@@ -37,6 +41,7 @@ int           eeAddress = 0; // EEPROM address offset
 
 byte vkMidiIn=VKINTERNAL_MIDI_IN;
 bool vkCommandModeKeyPressed=false;
+byte vkMode = VKINTERNAL_MODE_ALL;
 
 // Functions prototypes
 void VKSetGlobals();

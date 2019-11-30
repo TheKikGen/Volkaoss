@@ -40,6 +40,7 @@ MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial, MIDI, customMIDISettings);
 #define CC_LFO_DELAY        78
 #define CC_SUSTAIN          79
 
+
 // =================================================================================
 // GENERIC DEFINES & GLOBALS
 // =================================================================================
@@ -52,6 +53,7 @@ int           noteOnCounter = 0;            // Global NoteOn Counter
 unsigned long lastMidiMessageTimestamp =0;  // To handle the LED ON / Off
 
 bool          debugMode = false ;          // Activate display -- For debugging purpose
+
 
 // Functions prototypes
 void(* ArduinoSoftReset) (void) = 0; //declare reset function @ address 0
