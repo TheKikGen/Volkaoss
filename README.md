@@ -59,10 +59,10 @@ The firmware covers both Kaossilator Pro 3 / Pro 3+ and the Volca Sample. You ne
 
 <img width="500" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_setup.png?raw=true"  /> 
 
-. Plug the MIDI OUT of your keyboard to the Midi IN of the Volkaos. 
-. Plug the splitter cable to the MIDI Out of the Volkaoss.
-. Plug first out of the splitter to the Midin In of the Kaossilator pro, and the second one to the Midi IN of the Volcasample.
-. Plug a +5V power supply or a USB cable to the Arduino board, then choose some samples on parts 1-10 of the Volca Sample.
+* Plug the MIDI OUT of your keyboard to the Midi IN of the Volkaos. 
+* Plug the splitter cable to the MIDI Out of the Volkaoss.
+* Plug first out of the splitter to the Midin In of the Kaossilator pro, and the second one to the Midi IN of the Volcasample.
+* Plug a +5V power supply or a USB cable to the Arduino board, then choose some samples on parts 1-10 of the Volca Sample.
 
 ## Testing
 On the kaossilator, choose the piano patch (A42), and send notes to the channel 1, beyond C1. You should hear a piano sound and see the green light on the pad. Send notes from C2 to the channel 10 : you should hear the Volca sample sounds.
@@ -70,13 +70,12 @@ On the kaossilator, choose the piano patch (A42), and send notes to the channel 
 ## VK global commands
 You can use the following commands on the **channel 16**, dedicated to VK configuration.: 
 
-<img width="500" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_vk_commands.png?raw=true"  /> 
+<img width="300" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_vk_commands.png?raw=true"  /> 
 
 * Save current configuration permanently to the EEPROM
 * Reset to factory default : Midin 1, Out 11, transpose 36, PAD Y 64 for the Kaossilator. No activated midi in channels for the Volca sample. Debug mode off.
 * Toggle Debug : activate/ inactivate debug mode. The debug mode sends messages to a terminal connected to the serial port at 115200 bauds.  If you need to boot with debug mode activated, you must save the current configuration.  When debug is on , your midi equipment could react to what is sent to the serial port, especially at boot time, because midi out and terminal are sharing the same serial port.  So don't forget to set debug OFF in normal conditions.
 * Soft reset : reboot Volkaoss (soft reboot is not exactly the same as pushing the reset button).  You can use this command to apply what you saved, or simply to reset the Volkaoss remotely from your MIDI keyboard when necessary.
-
 
       Debug mode display at boot time on terminal, 115200 bauds :
       VOLKAOSS - MULTI-DEVICES MIDI CONTROLLER
@@ -115,8 +114,20 @@ You can use the following commands on the **channel 16**, dedicated to VK config
 To enter a command, you must hold both the command key (C0) and the key corresponding to the function you need to use. If a midi clock is received, the banks, and the ARG/GATE are started synchronously with the BPM. The ARP/gate speed increase/decrease are cyclics.
 If you need to change the midi in channel for the Volkaoss, you must tap the "Change midi in key " a number of time corresponding to the channel number.  Beyond 16, it stays at 1. The channel will change only after you release the command key. So, don't forget to adjust the midi out channel in your midi keyboard.  Same behaviour for the Midi out change.
 
-## VK features for the Volca Sample :
+## VK for the Volca Sample :
+* Map notes on channel 10, C2 octave to Volca Sample parts on midi 1 to 10, and play chromatically the last part played (not used for recording) beyond C2 
+* Velocity sensitivity 
+* Commands on C0 to toggle midi IN for parts (5-9) to use them for specific Volca controls or playing chromatically when recording with a DAW 
+* Reset controllers values 
 
-- Map notes to channel 10, C2 octave to Volca Sample parts on midi 1 to 10, and play chromatically the last part played (not used for recording) beyond C2
-- Commands on C0/ Channel 10 to toggle midi IN for parts (5-9) to use them for specific Volca controls or playing chromatically when recording with a DAW 
-- Velocity sensitivity
+<img width="300" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_volca_commands.png?raw=true"  /> 
+
+Notes are starting with part 1 at C2, part 2 at C#2, etc... on the channel 10 (as the General Midi drums standard). All commands must be sent from the channel 10, at the C0 octave.
+
+Enabling MIDI IN channels will allow you to tweak part in real time, like the knobs of the Volca Sample. Only channels from 5 to 9 can be enabled. To activate/inactivate (toggle) the part midi in channel, you must first select it, by emitting the note on the channel 10 corresponding to that part. For example, if you need to tweak a Kick drum, choose a sample at the part #5, press the corresponding note on the midi keyboard (E2) at the channel 10, then Command key + Toogle Midi In.  You just enabled the midi in on channel 5.  Then use your midi controller to tweak values.
+
+The "Reset all CC" command will initialize all CC values to their original value for the selected part.
+
+## Issues reporting
+
+Use the GitHub issue tab.
