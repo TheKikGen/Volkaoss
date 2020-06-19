@@ -1,5 +1,9 @@
-# Volkaoss
-VOLKAOSS -  VOLCASAMPLE AND KAOSSCILATOR AS TRUE DRUM BOX / SYNTH
+# Volkaoss 
+VOLCASAMPLE AND KAOSSCILATOR AS TRUE DRUM BOX / SYNTH
+
+<img width="250" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/Volkaoss_paperbox.jpg?raw=true"  />
+<img width="250" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/arduino_uno.jpg?raw=true"  />
+
 
 I use more and more hardware gear and synths, and a little less frequently software like VST plugins, the urge to touch buttons, turn knobs, plug and unplug cables. Thus, my setup is becoming a patchwork of "old" analog synths, sequencing softwares, sampler, and other more or less recent gears ...
 
