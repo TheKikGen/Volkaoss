@@ -45,19 +45,19 @@ The receiving MIDI channel is 11 by default. It must be set to 11 in Midi / MSSG
 
 The bank A,B,C,D buttons must be configured to  C2, C#2, D2, D#2.  This is the default configuration.
 Kaossilator pro Control change # are (corresponding to Kaossilator default factory) :
-. 92  pad on/off control change
-. 12  pad X control change
-. 13  pad Y control change
-. 90  GATE ARP on/off control change
-. 91  GATE ARP speed Control change
-. 93  GATE ARP time  Control change
+* 92  pad on/off control change
+* 12  pad X control change
+* 13  pad Y control change
+* 90  GATE ARP on/off control change
+* 91  GATE ARP speed Control change
+* 93  GATE ARP time  Control change
 You can change these in the Kaossilator Midi setting menu.
 
 TIPS : If you want to store permanently your Kaossilator configuration,  set your key, scale, and range , and store them in to a program bank.  Then save programs to bank 0, and again ALL to bank 0. At the next boot, you kaossilator will be ready to use with Volkaoss.
 
 The firmware covers both Kaossilator Pro 3 / Pro 3+ and the Volca Sample. You need a splitter cable to control the 2 devices at the same time. Otherwise, simply use a classic midi cable if you own only one of these devices.
 
-<img width="400" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_setup.png?raw=true"  /> 
+<img width="500" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_setup.png?raw=true"  /> 
 
 . Plug the MIDI OUT of your keyboard to the Midi IN of the Volkaos. 
 . Plug the splitter cable to the MIDI Out of the Volkaoss.
@@ -68,44 +68,52 @@ The firmware covers both Kaossilator Pro 3 / Pro 3+ and the Volca Sample. You ne
 On the kaossilator, choose the piano patch (A42), and send notes to the channel 1, beyond C1. You should hear a piano sound and see the green light on the pad. Send notes from C2 to the channel 10 : you should hear the Volca sample sounds.
 
 ## VK global commands
-You can use the following commands on the channel 16, dedicated to VK configuration.: 
-<img width="400" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_kaoss_commands.png?raw=true"  /> 
+You can use the following commands on the **channel 16**, dedicated to VK configuration.: 
+
+<img width="500" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_vk_commands.png?raw=true"  /> 
+
+* Save current configuration permanently to the EEPROM
+* Reset to factory default : Midin 1, Out 11, transpose 36, PAD Y 64 for the Kaossilator. No activated midi in channels for the Volca sample. Debug mode off.
+* Toggle Debug : activate/ inactivate debug mode. The debug mode sends messages to a terminal connected to the serial port at 115200 bauds.  If you need to boot with debug mode activated, you must save the current configuration.  When debug is on , your midi equipment could react to what is sent to the serial port, especially at boot time, because midi out and terminal are sharing the same serial port.  So don't forget to set debug OFF in normal conditions.
+* Soft reset : reboot Volkaoss (soft reboot is not exactly the same as pushing the reset button).  You can use this command to apply what you saved, or simply to reset the Volkaoss remotely from your MIDI keyboard when necessary.
 
 
-Save current configuration permanently to the EEPROM
-Reset to factory default : Midin 1, Out 11, transpose 36, PAD Y 64 for the Kaossilator. No activated midi in channels for the Volca sample. Debug mode off.
-Toggle Debug : activate/ inactivate debug mode. The debug mode sends messages to a terminal connected to the serial port at 115200 bauds.  If you need to boot this debug mode activated, you must save the current configuration.  When debug is on , your midi equipment could react to what is sent to the serial port, especially at boot time, because midi out and terminal are sharing the same serial port.  So don't forget to set debug OFF in normal conditions.
-Soft reset : reboot Volkaoss (soft reboot is not exactly the same as pushing the reset button).  You can use this command to apply what you saved, or simply to reset the Volkaoss remotely from your MIDI keyboard when necessary.
+      Debug mode display at boot time on terminal, 115200 bauds :
+      VOLKAOSS - MULTI-DEVICES MIDI CONTROLLER
+      Build number : 1.071216.0040
+      ================================================
+      Parameters retrieved from EEPROM
+      ================================================
+      Version                             : 0.00
+      Debug Mode                          : 1
+      VK Midin                            : 16
+      Kaossilator Midi In                 : 7
+      Kaossilator Midi Out                : 11
+      Kaossilator transpose               : 36
+      Kaossilator  PAD default value      : 64
+      Volca Sample midi in channel status : 0
+      ================================================
 
+## VK for the Kaossilator Pro 3 / Pro 3 +
 
+* Map midi notes to specific pad press and X, Y control changes 
+* Manage holded note on while playing another as a mono synth do 
+* Pitch bend handling relatively to the note currently pressed on the keyboard 
+* Map Cutoff, Reverb level or Modulation Wheel to PAD Y 
+* Map Resonance to a totally free PAD X 
+* Velocity sensitivity 
+* Commands on the C0 octave (C0 beeing the "command key") : 
+* Start/stop bank A, B, C, D. 
+* All banks on / off (2) 
+* ARP/GATE start / stop 
+* ARP speed increase / decrease (cyclic) 
+* Change Midi In channel (between 1-15.  Beyond 15 stays at 1 whatever the #)
+* Change Midi out channel
 
+<img width="500" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_kaoss_commands.png?raw=true"  /> 
 
-
-
-
-
-
-
-
-## VK features for the Kaossilator Pro 3 / Pro 3 +
-
-- Map midi notes to specific pad press and X, Y control changes (1)
-- Manage holded note on when playing another as a mono synth do
-- Pitch bend handling relatively to the note currently pressed on the keyboard
-- Map Cutoff, Reverb level or Modulation Wheel to PAD Y 
-- Map Resonnance to a totally free PAD X
-- Velocity sensitivity
-- Commands on the C0 octave  (C0 beeing the "command" key) :
-- Start/stop bank A, B, C, D.  (2)
-- All banks on / off (2)
-- ARP/GATE start / stop (2)
-- ARP speed increase / decrease (rotate from max to min and min to max)
-- Change Midi In channel
-
-(1) The kaossilator must set to 4 octaves, and scale must be chromatic. The Key is usually better fixed to C minus.
-(2) If a midi clock is received, the banks, and the ARG/GATE are started synchronously with the BPM
-
-
+To enter a command, you must hold both the command key (C0) and the key corresponding to the function you need to use. If a midi clock is received, the banks, and the ARG/GATE are started synchronously with the BPM. The ARP/gate speed increase/decrease are cyclics.
+If you need to change the midi in channel for the Volkaoss, you must tap the "Change midi in key " a number of time corresponding to the channel number.  Beyond 16, it stays at 1. The channel will change only after you release the command key. So, don't forget to adjust the midi out channel in your midi keyboard.  Same behaviour for the Midi out change.
 
 ## VK features for the Volca Sample :
 
