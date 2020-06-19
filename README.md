@@ -35,28 +35,47 @@ You simply have to put the Midi shield into the Arduino Uno socket. That's all y
 
 <img width="250" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/midi_shield.JPG?raw=true"  /> <img width="250" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/midishield2.jpg?raw=true"  /> 
 
-Firmware (sketch) download and uploading to the Arduino.
-Download the Volkaoss binary firmware BETA1 for Arduino Uno here.  This is a beta version, so you know what it means !   To push the bin firmware to the Arduino, you will need the excellent XLOADER utility , from Russemoto.  Arduino is usually found on COM 4 or COM 5 after you have plugged the USB cable.
+## Firmware (sketch) download and uploading to the Arduino.
+Download the Volkaoss project hre :https://github.com/TheKikGen/Volkaoss/archive/master.zip and unzip all files to a Volkaoss directory. Install Arduino IDE, and plug your Arduino Uno board to the USB port, then compile and upload the firmware. 
 
-I don't publish the sources because that was a lot of work, and it needs cleaning and formatting. I will probably do in a next future, if users like Volkaoss. For the moment, if you want to support Volkaoss, you can donate !
+## MIDI setup
+The kaossilator must be set to 4 octaves, scale must be chromatic.  
+The Key is usually better fixed to C minus. 
+The receiving MIDI channel is 11 by default. It must be set to 11 in Midi / MSSG / GL.CH else the koassilator will not receive messages from Volkaoss.  
 
-
-MIDI setup
-The kaossilator must be set to 4 octaves, scale must be chromatic. The Key is usually better fixed to C minus. The receiving MIDI channel is 11 by default. It must be set to 11 in Midi / MSSG / GL.CH else the koassilator will not receive messages from Volkaoss.  The bank A,B,C,D buttons must be configured to  C2, C#2, D2, D#2.  This is the default configuration.
+The bank A,B,C,D buttons must be configured to  C2, C#2, D2, D#2.  This is the default configuration.
 Kaossilator pro Control change # are (corresponding to Kaossilator default factory) :
-92  pad on/off control change
-12  pad X control change
-13  pad Y control change
-90  GATE ARP on/off control change
-91  GATE ARP speed Control change
-93  GATE ARP time  Control change
+. 92  pad on/off control change
+. 12  pad X control change
+. 13  pad Y control change
+. 90  GATE ARP on/off control change
+. 91  GATE ARP speed Control change
+. 93  GATE ARP time  Control change
 You can change these in the Kaossilator Midi setting menu.
+
 TIPS : If you want to store permanently your Kaossilator configuration,  set your key, scale, and range , and store them in to a program bank.  Then save programs to bank 0, and again ALL to bank 0. At the next boot, you kaossilator will be ready to use with Volkaoss.
 
 The firmware covers both Kaossilator Pro 3 / Pro 3+ and the Volca Sample. You need a splitter cable to control the 2 devices at the same time. Otherwise, simply use a classic midi cable if you own only one of these devices.
 
+<img width="400" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_setup.png?raw=true"  /> 
+
+. Plug the MIDI OUT of your keyboard to the Midi IN of the Volkaos. 
+. Plug the splitter cable to the MIDI Out of the Volkaoss.
+. Plug first out of the splitter to the Midin In of the Kaossilator pro, and the second one to the Midi IN of the Volcasample.
+. Plug a +5V power supply or a USB cable to the Arduino board, then choose some samples on parts 1-10 of the Volca Sample.
+
+## Testing
+On the kaossilator, choose the piano patch (A42), and send notes to the channel 1, beyond C1. You should hear a piano sound and see the green light on the pad. Send notes from C2 to the channel 10 : you should hear the Volca sample sounds.
+
+## VK global commands
+You can use the following commands on the channel 16, dedicated to VK configuration.: 
+<img width="400" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/volkaoss_kaoss_commands.png?raw=true"  /> 
 
 
+Save current configuration permanently to the EEPROM
+Reset to factory default : Midin 1, Out 11, transpose 36, PAD Y 64 for the Kaossilator. No activated midi in channels for the Volca sample. Debug mode off.
+Toggle Debug : activate/ inactivate debug mode. The debug mode sends messages to a terminal connected to the serial port at 115200 bauds.  If you need to boot this debug mode activated, you must save the current configuration.  When debug is on , your midi equipment could react to what is sent to the serial port, especially at boot time, because midi out and terminal are sharing the same serial port.  So don't forget to set debug OFF in normal conditions.
+Soft reset : reboot Volkaoss (soft reboot is not exactly the same as pushing the reset button).  You can use this command to apply what you saved, or simply to reset the Volkaoss remotely from your MIDI keyboard when necessary.
 
 
 
