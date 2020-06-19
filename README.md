@@ -3,10 +3,10 @@ VOLCASAMPLE AND KAOSSCILATOR AS TRUE DRUM BOX / SYNTH
 
 <img width="250" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/Volkaoss_paperbox.jpg?raw=true"  /> <img width="250" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/arduino_uno.jpg?raw=true"  />
 
-
-I use more and more hardware gear and synths, and a little less frequently software like VST plugins, the urge to touch buttons, turn knobs, plug and unplug cables. Thus, my setup is becoming a patchwork of "old" analog synths, sequencing softwares, sampler, and other more or less recent gears ...
-
+I use more and more hardware gear and synths, and a little less frequently software like VST plugins, the urge to touch buttons, turn knobs, plug and unplug cables. Thus, my setup is becoming a patchwork of "old" analog synths, sequencing softwares, sampler, and other more or less recent gears ... 
 The common point of all this: MIDI (not always). And in the world of MIDI, it is sometimes complicated to talk to each other.
+
+"Volkaoss" (VK if you don't speak Klingon) is a MIDI controller / converter allowing you to play MIDI notes on your Kaossilator Pro 3 as a mono synth, and to use the Volca Sample as a GM drum machine on the MIDI channel 10.   This is a totally plug and play solution, without soldering, based on the famous Arduino platform.
 
 ## The Korg Volca Sample :
 
@@ -24,6 +24,49 @@ I had already seen projects, quite experimental on all kinds of platforms, to ma
 Because developing software is a part of my job, I therefore started the development of what I called the "Volkaoss" (VK if you don't speak Klingon). I wanted a cheap plug and play solution, with no soldering, so I ordered an Arduino+ a MIDI SHIELD for less than 10 euros, and after several rather intense weeks of development, I produced a firmware which runs quite well in the Arduino Uno.
 
 It is a real pleasure to play on the KP3 with a keyboard, at the right pitch, transforming it to a very powerful mono romsynth at a price defying competition and to be able to use the Volca Sample as a real drum machine, managing velocity, and Compatible GM / channel 10 !!
+
+## Quick setup :
+
+### Arduino hardware
+You can search on Ebay for "Aduino Uno" and "Arduino MIDI SHIELD".
+For example : Arduino Uno from UK  and Arduino Midi shield from HK .
+It should cost less than 15 €, shipping included.
+You simply have to put the Midi shield into the Arduino Uno socket. That's all you have to do !!
+
+<img width="250" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/midi_shield.JPG?raw=true"  /> <img width="250" border="0" src="https://github.com/TheKikGen/Volkaoss/blob/master/doc/midishield2.jpg?raw=true"  /> 
+
+Firmware (sketch) download and uploading to the Arduino.
+Download the Volkaoss binary firmware BETA1 for Arduino Uno here.  This is a beta version, so you know what it means !   To push the bin firmware to the Arduino, you will need the excellent XLOADER utility , from Russemoto.  Arduino is usually found on COM 4 or COM 5 after you have plugged the USB cable.
+
+I don't publish the sources because that was a lot of work, and it needs cleaning and formatting. I will probably do in a next future, if users like Volkaoss. For the moment, if you want to support Volkaoss, you can donate !
+
+
+MIDI setup
+The kaossilator must be set to 4 octaves, scale must be chromatic. The Key is usually better fixed to C minus. The receiving MIDI channel is 11 by default. It must be set to 11 in Midi / MSSG / GL.CH else the koassilator will not receive messages from Volkaoss.  The bank A,B,C,D buttons must be configured to  C2, C#2, D2, D#2.  This is the default configuration.
+Kaossilator pro Control change # are (corresponding to Kaossilator default factory) :
+92  pad on/off control change
+12  pad X control change
+13  pad Y control change
+90  GATE ARP on/off control change
+91  GATE ARP speed Control change
+93  GATE ARP time  Control change
+You can change these in the Kaossilator Midi setting menu.
+TIPS : If you want to store permanently your Kaossilator configuration,  set your key, scale, and range , and store them in to a program bank.  Then save programs to bank 0, and again ALL to bank 0. At the next boot, you kaossilator will be ready to use with Volkaoss.
+
+The firmware covers both Kaossilator Pro 3 / Pro 3+ and the Volca Sample. You need a splitter cable to control the 2 devices at the same time. Otherwise, simply use a classic midi cable if you own only one of these devices.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## VK features for the Kaossilator Pro 3 / Pro 3 +
 
