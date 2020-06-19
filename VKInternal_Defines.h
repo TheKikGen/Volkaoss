@@ -4,7 +4,7 @@
 //
 // - Allow to play MIDI notes with the Kaossilator pro synth
 // - Allow to map Volcal Sample parts 1-10 to a GM standard rythm channel 10
-// Franck Touanen - Nov 2016.
+// TheKikGen - Nov 2016.
 
 // ====================================================================
 // VK INTERNAL DEFINES
